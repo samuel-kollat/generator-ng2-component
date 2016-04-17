@@ -1,6 +1,16 @@
 # generator-ng2-component [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 > Angular2 Component Generator with variety of options
 
+## Beta version
+
+Todo:
+
+ * Option for inline template
+ * Option for inline styles
+ * Choose whether to include Forms, Routes, ...
+ * Global configuration
+ * Choose whether to generate Unit tests, E2E tests
+
 ## Installation
 
 First, install [Yeoman](http://yeoman.io) and generator-ng2-component using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
@@ -10,7 +20,7 @@ npm install -g yo
 npm install -g generator-ng2-component
 ```
 
-Then generate your new project:
+Then generate your new Angular2 component:
 
 ```bash
 yo ng2-component

@@ -1,6 +1,6 @@
 {
   "name": "generator-ng2-component",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Angular2 Component Generator with variety of options",
   "homepage": "https://github.com/samuel-kollat/generator-ng2-component",
   "author": {
@@ -46,7 +46,10 @@
       "mocha": true
     }
   },
-  "repository": "samuel-kollat/generator-ng-2-component",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samuel-kollat/generator-ng2-component.git"
+  },
   "scripts": {
     "prepublish": "gulp prepublish",
     "test": "gulp"
