@@ -3,13 +3,19 @@
 
 ## Beta version
 
+Current options:
+
+ * Name of a new component
+ * Destination for the new component
+ * Inline or separate template & styles
+     * For separate: Sass or CSS file
+ * Choose whether to generate Unit tests & E2E tests
+
 Todo:
 
- * Option for inline template
- * Option for inline styles
+ * Option for templateUrl
  * Choose whether to include Forms, Routes, ...
  * Global configuration
- * Choose whether to generate Unit tests, E2E tests
 
 ## Installation
 

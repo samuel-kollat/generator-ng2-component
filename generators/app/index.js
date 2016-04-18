@@ -4,6 +4,7 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 var mkdirp = require('mkdirp');
+var fs = require('fs');
 
 module.exports = yeoman.Base.extend({
 
@@ -26,6 +27,29 @@ module.exports = yeoman.Base.extend({
             name: 'dest',
             message: 'Path to the Component location? [Parent folder of the Component, e.g \'src/app\' will result in \'src/app/new_component_name\']',
             default: 'src/app'
+        }, {
+            type: 'confirm',
+            name: 'inline',
+            message: 'Make HTML & CSS inline? [If No, separate files for HTML & CSS will be created]',
+            default: false
+        }, {
+            when: function (response) {
+                return !response.inline;
+            },
+            type: 'confirm',
+            name: 'sass',
+            message: 'Convert CSS file to Sass file? [Add .scss extension]',
+            default: false
+        }, {
+            type: 'confirm',
+            name: 'unit',
+            message: 'Create Unit tests?',
+            default: true
+        }, {
+            type: 'confirm',
+            name: 'e2e',
+            message: 'Create E2E tests?',
+            default: true
         }];
 
         this.prompt(prompts, function (props) {
@@ -60,48 +84,65 @@ module.exports = yeoman.Base.extend({
             }
         );
 
-        // Component
-        this.fs.copyTpl(
-            this.templatePath('_component.ts'),
-            this.destinationPath(dest + nameLower + '.component.ts'), {
-                fileName: nameLower,
-                className: nameUpper,
-                selector: nameDashed
-            }
-        );
+        // Inline markup & styles
+        if(this.props.inline) {
+            // Component
+            this.fs.copyTpl(
+                this.templatePath('_component_inline.ts'),
+                this.destinationPath(dest + nameLower + '.component.ts'), {
+                    className: nameUpper,
+                    selector: nameDashed
+                }
+            );
+        } else {
+            // Component
+            this.fs.copyTpl(
+                this.templatePath('_component.ts'),
+                this.destinationPath(dest + nameLower + '.component.ts'), {
+                    fileName: nameLower,
+                    className: nameUpper,
+                    selector: nameDashed
+                }
+            );
 
-        // HTML
-        this.fs.copyTpl(
-            this.templatePath('_component.html'),
-            this.destinationPath(dest + nameLower + '.html'), {
-                name: nameUpper
-            }
-        );
+            // HTML
+            this.fs.copyTpl(
+                this.templatePath('_component.html'),
+                this.destinationPath(dest + nameLower + '.html'), {
+                    name: nameUpper
+                }
+            );
 
-        // Sass
-        this.fs.copyTpl(
-            this.templatePath('_component.scss'),
-            this.destinationPath(dest + nameLower + '.scss'), {
-                name: nameUpper
-            }
-        );
+            // CSS, Sass
+            var cssSuffix = this.props.sass ? 'scss' : 'css';
+            this.fs.copyTpl(
+                this.templatePath('_component.scss'),
+                this.destinationPath(dest + nameLower + '.' + cssSuffix), {
+                    name: nameUpper
+                }
+            );
+        }
 
         // Unit tests
-        this.fs.copyTpl(
-            this.templatePath('_component.spec.ts'),
-            this.destinationPath(dest + nameLower + '.spec.ts'), {
-                fileName: nameLower,
-                className: nameUpper
-            }
-        );
+        if(this.props.unit) {
+            this.fs.copyTpl(
+                this.templatePath('_component.spec.ts'),
+                this.destinationPath(dest + nameLower + '.spec.ts'), {
+                    fileName: nameLower,
+                    className: nameUpper
+                }
+            );
+        }
 
         // E2E tests
-        this.fs.copyTpl(
-            this.templatePath('_component.e2e.ts'),
-            this.destinationPath(dest + nameLower + '.e2e.ts'), {
-                className: nameUpper
-            }
-        );
+        if(this.props.e2e) {
+            this.fs.copyTpl(
+                this.templatePath('_component.e2e.ts'),
+                this.destinationPath(dest + nameLower + '.e2e.ts'), {
+                    className: nameUpper
+                }
+            );
+        }
     },
 
     install: function () {}
