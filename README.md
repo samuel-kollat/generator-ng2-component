@@ -7,13 +7,13 @@ Current options:
 
  * Name of a new component
  * Destination for the new component
- * Inline or separate template & styles
-     * For separate: Sass or CSS file
+ * Inline or separate template & styles. For separate
+     * Sass, Less or CSS file
+     * Include via templateUrl & styleUrls OR require('...')
  * Choose whether to generate Unit tests & E2E tests
 
 Todo:
 
- * Option for templateUrl
  * Choose whether to include Forms, Routes, ...
  * Global configuration
 

@@ -4,7 +4,9 @@ var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var yosay = require('yosay');
 var mkdirp = require('mkdirp');
-var fs = require('fs');
+
+const Require = 0;
+const Urls = 1;
 
 module.exports = yeoman.Base.extend({
 
@@ -20,26 +22,43 @@ module.exports = yeoman.Base.extend({
         var prompts = [{
             type: 'input',
             name: 'name',
-            message: 'Component Name? [use UpperCamelCase for naming]',
+            message: chalk.bgCyan.white('Component Name?') + chalk.yellow(' [use UpperCamelCase]'),
             default: 'Home'
         }, {
             type: 'input',
             name: 'dest',
-            message: 'Path to the Component location? [Parent folder of the Component, e.g \'src/app\' will result in \'src/app/new_component_name\']',
+            message: chalk.bgCyan.white('Path to the Component location?') + chalk.yellow(' [e.g \'src/app\' will result in \'src/app/<component>\']'),
             default: 'src/app'
         }, {
             type: 'confirm',
-            name: 'inline',
-            message: 'Make HTML & CSS inline? [If No, separate files for HTML & CSS will be created]',
+            name: 'inlineCss',
+            message: chalk.bgCyan.white('Make HTML & CSS inline?') + chalk.yellow(' [') + chalk.red('y') + chalk.yellow(' for inline ') + chalk.red('N') + chalk.yellow(' for separate files]'),
             default: false
         }, {
             when: function (response) {
                 return !response.inline;
             },
-            type: 'confirm',
-            name: 'sass',
-            message: 'Convert CSS file to Sass file? [Add .scss extension]',
-            default: false
+            type: 'list',
+            name: 'css',
+            message: chalk.bgCyan.white('Use CSS preprocessor or use pure CSS?'),
+            choices: ['Scss', 'Less', 'Css'],
+            filter: function (str){
+                return str.toLowerCase();
+            }
+        }, {
+            when: function (response) {
+                return !response.inline;
+            },
+            type: 'list',
+            name: 'includes',
+            message: chalk.bgCyan.white('How to include HTML & CSS files?'),
+            choices: [{
+                name:'require (e.g. for Webpack build)',
+                value: Require
+            }, {
+                name: 'templateUrl & styleUrls',
+                value: Urls
+            }]
         }, {
             type: 'confirm',
             name: 'unit',
@@ -67,6 +86,8 @@ module.exports = yeoman.Base.extend({
         var dest = this.props.dest.charAt(this.props.dest.length - 1) === "/"
             ? this.props.dest + nameLower + '/'
             : this.props.dest + '/' + nameLower + '/';
+
+        console.log(this.props.includes);
 
         // Create component directory
         mkdirp(dest, function (err) {
@@ -96,14 +117,27 @@ module.exports = yeoman.Base.extend({
             );
         } else {
             // Component
-            this.fs.copyTpl(
-                this.templatePath('_component.ts'),
-                this.destinationPath(dest + nameLower + '.component.ts'), {
-                    fileName: nameLower,
-                    className: nameUpper,
-                    selector: nameDashed
-                }
-            );
+            if(this.props.includes === Urls) {
+                this.fs.copyTpl(
+                    this.templatePath('_component_urls.ts'),
+                    this.destinationPath(dest + nameLower + '.component.ts'), {
+                        fileName: nameLower,
+                        className: nameUpper,
+                        selector: nameDashed,
+                        stylesExtension: this.props.css
+                    }
+                );
+            } else {
+                this.fs.copyTpl(
+                    this.templatePath('_component.ts'),
+                    this.destinationPath(dest + nameLower + '.component.ts'), {
+                        fileName: nameLower,
+                        className: nameUpper,
+                        selector: nameDashed,
+                        stylesExtension: this.props.css
+                    }
+                );
+            }
 
             // HTML
             this.fs.copyTpl(
@@ -113,11 +147,10 @@ module.exports = yeoman.Base.extend({
                 }
             );
 
-            // CSS, Sass
-            var cssSuffix = this.props.sass ? 'scss' : 'css';
+            // CSS, Sass, Less
             this.fs.copyTpl(
-                this.templatePath('_component.scss'),
-                this.destinationPath(dest + nameLower + '.' + cssSuffix), {
+                this.templatePath('_component.css'),
+                this.destinationPath(dest + nameLower + '.' + this.props.css), {
                     name: nameUpper
                 }
             );

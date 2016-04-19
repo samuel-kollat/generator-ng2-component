@@ -5,8 +5,8 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 @Component({
     selector: '<%= selector %>',
     directives: [FORM_DIRECTIVES, ROUTER_DIRECTIVES],
-    template: require('./<%= fileName %>.html'),
-    styles: [require('./<%= fileName %>.<%= stylesExtension %>')],
+    templateUrl: './<%= fileName %>.html',
+    styleUrls: ['./<%= fileName %>.<%= stylesExtension %>'],
 })
 export class <%= className %> {
     constructor(private fb: FormBuilder) {}
